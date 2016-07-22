@@ -1,6 +1,6 @@
 {
-    "ConsumerKey"      : "",
-	"ConsumerSecret"   : "",
-	"AccessToken"      : "",
-	"AccessTokenSecret": ""
+    "ConsumerKey"      : "CONSUMER_KEY",
+    "ConsumerSecret"   : "CONSUMER_SECRET",
+    "AccessToken"      : "ACCESS_TOKEN",
+    "AccessTokenSecret": "ACCESS_TOKEN_SECRET"
 }
