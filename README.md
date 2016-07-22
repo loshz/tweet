@@ -2,4 +2,4 @@
 
 Tweet is a command line tool for sending tweets from your terminal. It's as simple as that.
 
-## Configuration
+## Installation
