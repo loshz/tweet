@@ -1,13 +1,11 @@
 package client
 
-import (
-	"io"
-	"net/http"
-)
+import "net/http"
 
 // HTTPClient contains a HTTP that issues a POST to the specified URL.
 type HTTPClient interface {
-	Post(url string, bodyType string, body io.Reader) (resp *http.Response, err error)
+	//NewRequest(method, urlStr string, body io.Reader) (*http.Request, error)
+	Do(req *http.Request) (resp *http.Response, err error)
 }
 
 // ValidResponse checks a given HTTP response is valid and doesn't contain errors.

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/danbondd/tweet/config"
@@ -15,7 +16,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	res, err := tweet.Send(c, os.Args[1])
+	t := tweet.NewTweet(http.DefaultClient)
+	res, err := t.Send(c, os.Args[1])
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error sending tweet: %v\n", err)
 		os.Exit(1)
