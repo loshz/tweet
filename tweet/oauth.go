@@ -79,7 +79,7 @@ func generateTimestamp() *string {
 func (oa *OAuthDetails) generateSignature(status string, config *config.Config) {
 	params := collectParams(oa, status)
 	baseString := generateBaseString(params)
-	sig := sign(*baseString, config)
+	sig := sign(baseString, config)
 	oa.Signature = url.QueryEscape(*sig)
 }
 
@@ -124,10 +124,10 @@ func generateSigningKey(c *config.Config) *string {
 	return &key
 }
 
-func sign(baseString string, c *config.Config) *string {
+func sign(baseString *string, c *config.Config) *string {
 	signingKey := generateSigningKey(c)
 	h := hmac.New(sha1.New, []byte(*signingKey))
-	h.Write([]byte(baseString))
+	h.Write([]byte(*baseString))
 	result := base64.StdEncoding.EncodeToString(h.Sum(nil))
 
 	return &result
