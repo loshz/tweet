@@ -10,4 +10,4 @@ Tweet is a command line tool for sending tweets from your terminal. It's as simp
 * `cd` into directory and run `make setup`
 * Copy keys from Twitter app into `config.json`
 * Run `make install`
-* Send a Tweet `tweet 'I sent this from my command line!'`
+* Enjoy `tweet "I sent this tweet from my command line :)"`

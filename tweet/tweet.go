@@ -12,15 +12,18 @@ const tweetLength int = 140
 
 // Tweet l
 type Tweet struct {
-	client client.HTTPClient
+	client  client.HTTPClient
+	request client.NewRequest
 }
 
 // NewTweet returns a new Tweet with all of its required fields.
-func NewTweet(c client.HTTPClient) Tweet {
-	return Tweet{c}
+func NewTweet(c client.HTTPClient, r client.NewRequest) Tweet {
+	return Tweet{c, r}
 }
 
-// Send l
+// Send takes Twitter app (https://apps.titter.com) credentials and passes
+// them to an OAuth generator along with a given status. It then attempts
+// to send a POST request to the Twitter API and handle a response.
 func (t Tweet) Send(c *config.Config, status string) (string, error) {
 	if !correctTweetLength(status) {
 		return status, fmt.Errorf("tweet exceeds %d character limit", tweetLength)
@@ -28,7 +31,7 @@ func (t Tweet) Send(c *config.Config, status string) (string, error) {
 
 	oa := NewOAuthDetails(c, status)
 
-	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf(apiURL+apiVersion+statusURI+"?status=%s", encodeStatus(&status)), nil)
+	req, err := t.request(http.MethodPost, fmt.Sprintf(apiURL+apiVersion+statusURI+"?status=%s", encodeStatus(&status)), nil)
 	if err != nil {
 		return status, fmt.Errorf("error building request: %v", err)
 	}
