@@ -16,8 +16,8 @@ type Tweet struct {
 	request client.NewRequest
 }
 
-// NewTweet returns a new Tweet with all of its required fields.
-func NewTweet(c client.HTTPClient, r client.NewRequest) Tweet {
+// New returns a new Tweet with all of its required fields.
+func New(c client.HTTPClient, r client.NewRequest) Tweet {
 	return Tweet{c, r}
 }
 
@@ -41,12 +41,11 @@ func (t Tweet) Send(c *config.Config, status string) (string, error) {
 	if err != nil {
 		return status, fmt.Errorf("%v", err)
 	}
+	defer res.Body.Close()
 
 	if !client.ValidResponse(res) {
 		return status, fmt.Errorf("%s", res.Status)
 	}
-
-	defer res.Body.Close()
 
 	return fmt.Sprintf("Tweet successfully sent!"), nil
 }

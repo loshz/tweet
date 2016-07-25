@@ -6,6 +6,9 @@ import (
 	"os"
 )
 
+// Open opens the named file for reading.
+type Open func(name string) (*os.File, error)
+
 // Config contains the Twitter API keys.
 type Config struct {
 	ConsumerKey,
@@ -15,9 +18,9 @@ type Config struct {
 }
 
 // New creates a new Config from the given fields in config.json
-func New() (*Config, error) {
+func New(o Open) (*Config, error) {
 	c := new(Config)
-	file, err := os.Open("./config.json")
+	file, err := o("./config.json")
 	if err != nil {
 		return nil, fmt.Errorf("error opening config file")
 	}
