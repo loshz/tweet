@@ -3,7 +3,6 @@ package tweet
 import (
 	"fmt"
 	"net/http"
-	"net/url"
 
 	"github.com/danbondd/tweet/client"
 	"github.com/danbondd/tweet/config"
@@ -27,11 +26,9 @@ func (t Tweet) Send(c *config.Config, status string) (string, error) {
 		return status, fmt.Errorf("tweet exceeds %d character limit", tweetLength)
 	}
 
-	status = url.QueryEscape(status)
 	oa := NewOAuthDetails(c, status)
-	fmt.Println(fmt.Sprintf("%s", oa))
 
-	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf(apiURL+apiVersion+statusURI+"?status=%s", status), nil)
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf(apiURL+apiVersion+statusURI+"?status=%s", encodeStatus(&status)), nil)
 	if err != nil {
 		return status, fmt.Errorf("error building request: %v", err)
 	}
@@ -48,7 +45,7 @@ func (t Tweet) Send(c *config.Config, status string) (string, error) {
 
 	defer res.Body.Close()
 
-	return res.Status, nil
+	return fmt.Sprintf("Tweet successfully sent!"), nil
 }
 
 func correctTweetLength(status string) bool {

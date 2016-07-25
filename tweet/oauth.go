@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/danbondd/tweet/config"
@@ -50,7 +51,7 @@ func (oa OAuthDetails) String() string {
 func NewOAuthDetails(c *config.Config, status string) *OAuthDetails {
 	oa := new(OAuthDetails)
 	oa.ConsumerKey = c.ConsumerKey
-	oa.Nonce = generateNonce()
+	oa.Nonce = *generateNonce()
 	oa.SignatureMethod = signatureMethod
 	oa.Timestamp = *generateTimestamp()
 	oa.Token = c.AccessToken
@@ -60,24 +61,26 @@ func NewOAuthDetails(c *config.Config, status string) *OAuthDetails {
 	return oa
 }
 
-func generateNonce() string {
+func generateNonce() *string {
 	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
 	b := make([]byte, 32)
 	for i := range b {
 		b[i] = chars[rand.Intn(len(chars))]
 	}
+	s := string(b)
 
-	return string(b)
+	return &s
 }
 
 func generateTimestamp() *string {
-	t := time.Now().UnixNano() / int64(time.Millisecond)
+	t := time.Now().Unix()
 	f := fmt.Sprintf("%d", t)
+
 	return &f
 }
 
 func (oa *OAuthDetails) generateSignature(status string, config *config.Config) {
-	params := collectParams(oa, status)
+	params := collectParams(oa, encodeStatus(&status))
 	baseString := generateBaseString(params)
 	sig := sign(baseString, config)
 	oa.Signature = url.QueryEscape(*sig)
@@ -98,17 +101,17 @@ func collectParams(oa *OAuthDetails, status string) *string {
 }
 
 func generateBaseString(params *string) *string {
-	var b bytes.Buffer
+	var b, u bytes.Buffer
 	b.WriteString(http.MethodPost)
 	b.WriteString("&")
 
-	var u bytes.Buffer
 	u.WriteString(apiURL)
+	u.WriteString(apiVersion)
 	u.WriteString(statusURI)
 
 	b.WriteString(url.QueryEscape(u.String()))
 	b.WriteString("&")
-	b.WriteString(url.QueryEscape(*params))
+	b.WriteString(encodeStatus(params))
 	baseString := b.String()
 
 	return &baseString
@@ -131,4 +134,8 @@ func sign(baseString *string, c *config.Config) *string {
 	result := base64.StdEncoding.EncodeToString(h.Sum(nil))
 
 	return &result
+}
+
+func encodeStatus(status *string) string {
+	return strings.Replace(url.QueryEscape(*status), "+", "%20", -1)
 }
