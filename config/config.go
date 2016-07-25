@@ -16,7 +16,7 @@ type Config struct {
 
 // New creates a new Config from the given fields in config.json
 func New() (*Config, error) {
-	var c Config
+	c := new(Config)
 	file, err := os.Open("./config.json")
 	if err != nil {
 		return nil, fmt.Errorf("error opening config file")
@@ -29,5 +29,5 @@ func New() (*Config, error) {
 
 	defer file.Close()
 
-	return &c, nil
+	return c, nil
 }
