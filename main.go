@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	c, err := config.New(os.Open)
+	c, err := config.New(config.FileReader, config.JSONDecoderFactory)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)

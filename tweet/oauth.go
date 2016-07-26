@@ -24,7 +24,7 @@ const (
 	authHeader      string = "Authorization"
 )
 
-// OAuthDetails l
+// OAuthDetails contains a valid set of OAuth details based on credentials from a config file.
 type OAuthDetails struct {
 	ConsumerKey,
 	Nonce,
@@ -47,7 +47,7 @@ func (oa OAuthDetails) String() string {
 	)
 }
 
-// NewOAuthDetails l
+// NewOAuthDetails collects a valid set of OAuth details based on credentials passed from a config file.
 func NewOAuthDetails(c *config.Config, status string) *OAuthDetails {
 	oa := new(OAuthDetails)
 	oa.ConsumerKey = c.ConsumerKey

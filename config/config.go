@@ -3,11 +3,17 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 )
 
-// Open opens the named file for reading.
-type Open func(name string) (*os.File, error)
+// openFile opens the named file for reading.
+type openFile func(name string) (io.ReadCloser, error)
+
+// FileReader l
+func FileReader(name string) (io.ReadCloser, error) {
+	return os.Open(name)
+}
 
 // Config contains the Twitter API keys.
 type Config struct {
@@ -17,20 +23,31 @@ type Config struct {
 	AccessTokenSecret string
 }
 
+// Decoder l
+type Decoder interface {
+	Decode(v interface{}) error
+}
+
+type decoderFactory func(r io.Reader) Decoder
+
+// JSONDecoderFactory l
+func JSONDecoderFactory(r io.Reader) Decoder {
+	return json.NewDecoder(r)
+}
+
 // New creates a new Config from the given fields in config.json
-func New(o Open) (*Config, error) {
+func New(open openFile, d decoderFactory) (*Config, error) {
 	c := new(Config)
-	file, err := o("./config.json")
+	file, err := open("./config.json")
 	if err != nil {
-		return nil, fmt.Errorf("error opening config file")
+		return nil, fmt.Errorf("error opening config file: %v", err)
 	}
-
-	decoder := json.NewDecoder(file)
-	if err := decoder.Decode(&c); err != nil {
-		return nil, fmt.Errorf("error decoding config JSON")
-	}
-
 	defer file.Close()
+
+	decoder := d(file)
+	if err := decoder.Decode(&c); err != nil {
+		return nil, fmt.Errorf("error decoding config JSON: %v", err)
+	}
 
 	return c, nil
 }

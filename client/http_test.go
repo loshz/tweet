@@ -21,6 +21,14 @@ func TestInvalidResponseCode(t *testing.T) {
 	res := createHttpResponse(http.StatusNotFound)
 
 	if client.ValidResponse(res) {
-		t.Errorf("expected error")
+		t.Errorf("expected invalid response")
+	}
+}
+
+func TestValidResponseCode(t *testing.T) {
+	res := createHttpResponse(http.StatusOK)
+
+	if !client.ValidResponse(res) {
+		t.Errorf("expected valid response")
 	}
 }
