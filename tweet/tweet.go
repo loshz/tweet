@@ -10,7 +10,7 @@ import (
 
 const tweetLength int = 140
 
-// Tweet l
+// Tweet is a custom struct containing a HTTP client and request.
 type Tweet struct {
 	client  client.HTTPClient
 	request client.NewRequest

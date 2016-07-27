@@ -7,10 +7,10 @@ import (
 	"os"
 )
 
-// openFile opens the named file for reading.
+// openFile is a custom type for os.Open().
 type openFile func(name string) (io.ReadCloser, error)
 
-// FileReader l
+// FileReader opens the named file for reading.
 func FileReader(name string) (io.ReadCloser, error) {
 	return os.Open(name)
 }
@@ -23,14 +23,16 @@ type Config struct {
 	AccessTokenSecret string
 }
 
-// Decoder l
+// Decoder specifies the behaviour of a given decoder.
+// It only implements the Decode method which reads the next JSON-encoded
+// value from its input and stores it in the value pointed to by v.
 type Decoder interface {
 	Decode(v interface{}) error
 }
 
 type decoderFactory func(r io.Reader) Decoder
 
-// JSONDecoderFactory l
+// JSONDecoderFactory returns a new JSON Decoder.
 func JSONDecoderFactory(r io.Reader) Decoder {
 	return json.NewDecoder(r)
 }

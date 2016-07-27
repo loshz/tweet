@@ -5,7 +5,8 @@ import (
 	"net/http"
 )
 
-// HTTPClient contains a HTTP that issues a POST to the specified URL.
+// HTTPClient specifies the behaviour of a given HTTP client.
+// It only implements the Do method which sends an HTTP request and returns an HTTP response.
 type HTTPClient interface {
 	Do(req *http.Request) (resp *http.Response, err error)
 }

@@ -18,7 +18,7 @@ func (t testDecoder) Decode(v interface{}) error {
 	return errors.New("decode error")
 }
 
-func mockDecoderFact(r io.Reader) config.Decoder {
+func mockDecoderFactory(r io.Reader) config.Decoder {
 	return testDecoder{r}
 }
 
@@ -50,7 +50,7 @@ func TestFileOpenError(t *testing.T) {
 
 func TestDecodeError(t *testing.T) {
 	mock := mockFileReader{false}
-	_, err := config.New(mock.mockOpen, mockDecoderFact)
+	_, err := config.New(mock.mockOpen, mockDecoderFactory)
 	if err == nil {
 		t.Errorf("expected error, got: nil")
 	}
