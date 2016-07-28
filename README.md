@@ -4,7 +4,7 @@ Tweet is a command line tool for sending tweets from your terminal. It's as simp
 
 ## Installation
 
-* Create a new Twitter app - https://apps.twitter.com/
+* Create a new [Twitter app](https://apps.twitter.com/)
 * Create an Access Token and Secret key
 * Download the repo `go get github.com/danbondd/tweet`
 * `cd` into directory and run `make setup`
