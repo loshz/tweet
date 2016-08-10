@@ -1,4 +1,4 @@
-package config
+package tweet
 
 import (
 	"encoding/json"
@@ -37,8 +37,8 @@ func JSONDecoderFactory(r io.Reader) Decoder {
 	return json.NewDecoder(r)
 }
 
-// New creates a new Config from the given fields in config.json
-func New(open openFile, d decoderFactory) (*Config, error) {
+// NewConfig creates a new Config from the given fields in config.json
+func NewConfig(open openFile, d decoderFactory) (*Config, error) {
 	c := new(Config)
 	file, err := open("./config.json")
 	if err != nil {

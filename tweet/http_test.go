@@ -1,4 +1,4 @@
-package client_test
+package tweet_test
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/danbondd/tweet/client"
+	"github.com/danbondd/tweet/tweet"
 )
 
 func createHttpResponse(status int) *http.Response {
@@ -20,7 +20,7 @@ func createHttpResponse(status int) *http.Response {
 func TestInvalidResponseCode(t *testing.T) {
 	res := createHttpResponse(http.StatusNotFound)
 
-	if client.ValidResponse(res) {
+	if tweet.ValidResponse(res) {
 		t.Errorf("expected invalid response")
 	}
 }
@@ -28,7 +28,7 @@ func TestInvalidResponseCode(t *testing.T) {
 func TestValidResponseCode(t *testing.T) {
 	res := createHttpResponse(http.StatusOK)
 
-	if !client.ValidResponse(res) {
+	if !tweet.ValidResponse(res) {
 		t.Errorf("expected valid response")
 	}
 }

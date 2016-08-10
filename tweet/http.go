@@ -1,4 +1,4 @@
-package client
+package tweet
 
 import (
 	"io"

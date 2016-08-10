@@ -3,28 +3,25 @@ package tweet
 import (
 	"fmt"
 	"net/http"
-
-	"github.com/danbondd/tweet/client"
-	"github.com/danbondd/tweet/config"
 )
 
 const tweetLength int = 140
 
 // Tweet is a custom struct containing a HTTP client and request.
 type Tweet struct {
-	client  client.HTTPClient
-	request client.NewRequest
+	client  HTTPClient
+	request NewRequest
 }
 
-// New returns a new Tweet with all of its required fields.
-func New(c client.HTTPClient, r client.NewRequest) Tweet {
+// NewTweet returns a new Tweet with all of its required fields.
+func NewTweet(c HTTPClient, r NewRequest) Tweet {
 	return Tweet{c, r}
 }
 
 // Send takes Twitter app (https://apps.titter.com) credentials and passes
 // them to an OAuth generator along with a given status. It then attempts
 // to send a POST request to the Twitter API and handle a response.
-func (t Tweet) Send(c *config.Config, status string) (string, error) {
+func (t Tweet) Send(c *Config, status string) (string, error) {
 	if !correctTweetLength(status) {
 		return status, fmt.Errorf("tweet exceeds %d character limit", tweetLength)
 	}
@@ -43,7 +40,7 @@ func (t Tweet) Send(c *config.Config, status string) (string, error) {
 	}
 	defer res.Body.Close()
 
-	if !client.ValidResponse(res) {
+	if !ValidResponse(res) {
 		return status, fmt.Errorf("%s", res.Status)
 	}
 
