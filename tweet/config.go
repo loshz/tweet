@@ -2,9 +2,11 @@ package tweet
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
 const configFile string = "/.tweet/config.json"
@@ -43,7 +45,12 @@ func JSONDecoderFactory(r io.Reader) Decoder {
 func NewConfig(open openFile, d decoderFactory) (*Config, error) {
 	c := new(Config)
 	homeDir := os.Getenv("HOME")
-	file, err := open(homeDir + configFile)
+	if len(homeDir) == 0 {
+		return nil, errors.New("home directory not set")
+	}
+
+	path := []string{homeDir, configFile}
+	file, err := open(strings.Join(path, ""))
 	if err != nil {
 		return nil, fmt.Errorf("error opening config file: %v", err)
 	}
