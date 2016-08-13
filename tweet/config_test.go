@@ -44,7 +44,7 @@ func TestFileOpenError(t *testing.T) {
 	mock := mockFileReader{true}
 	_, err := tweet.NewConfig(mock.mockOpen, tweet.JSONDecoderFactory)
 	if err == nil {
-		t.Errorf("expected error, got: nil")
+		t.Error("expected file open error, got: nil")
 	}
 }
 
@@ -52,7 +52,7 @@ func TestDecodeError(t *testing.T) {
 	mock := mockFileReader{false}
 	_, err := tweet.NewConfig(mock.mockOpen, mockDecoderFactory)
 	if err == nil {
-		t.Errorf("expected error, got: nil")
+		t.Error("expected file decode error, got: nil")
 	}
 }
 
@@ -60,6 +60,6 @@ func TestConfigSuccess(t *testing.T) {
 	mock := mockFileReader{false}
 	_, err := tweet.NewConfig(mock.mockOpen, tweet.JSONDecoderFactory)
 	if err != nil {
-		t.Errorf("expected nil, got: %v", err)
+		t.Errorf("expected nil error, got: %v", err)
 	}
 }

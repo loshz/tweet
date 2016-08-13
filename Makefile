@@ -1,5 +1,6 @@
 setup:
-	cp config.json.example config.json
+	mkdir -p ~/.tweet/
+	cp config.json.example ~/.tweet/config.json
 
 build:
 	go install

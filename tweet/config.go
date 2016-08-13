@@ -7,6 +7,8 @@ import (
 	"os"
 )
 
+const configFile string = "/.tweet/config.json"
+
 // openFile is a custom type for os.Open().
 type openFile func(name string) (io.ReadCloser, error)
 
@@ -40,7 +42,8 @@ func JSONDecoderFactory(r io.Reader) Decoder {
 // NewConfig creates a new Config from the given fields in config.json
 func NewConfig(open openFile, d decoderFactory) (*Config, error) {
 	c := new(Config)
-	file, err := open("./config.json")
+	homeDir := os.Getenv("HOME")
+	file, err := open(homeDir + configFile)
 	if err != nil {
 		return nil, fmt.Errorf("error opening config file: %v", err)
 	}
