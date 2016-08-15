@@ -46,7 +46,7 @@ func NewConfig(open openFile, d decoderFactory) (*Config, error) {
 	c := new(Config)
 	homeDir := os.Getenv("HOME")
 	if len(homeDir) == 0 {
-		return nil, errors.New("home directory not set")
+		return "", errors.New("home directory not set")
 	}
 
 	path := []string{homeDir, configFile}
