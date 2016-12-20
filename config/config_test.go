@@ -1,4 +1,4 @@
-package tweet_test
+package config_test
 
 import (
 	"bytes"
@@ -7,7 +7,8 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/danbondd/tweet/tweet"
+	"github.com/danbondd/tweet/config"
+	"github.com/danbondd/tweet/helpers"
 )
 
 type testDecoder struct {
@@ -18,7 +19,7 @@ func (t testDecoder) Decode(v interface{}) error {
 	return errors.New("decode error")
 }
 
-func mockDecoderFactory(r io.Reader) tweet.Decoder {
+func mockDecoderFactory(r io.Reader) helpers.Decoder {
 	return testDecoder{r}
 }
 
@@ -32,17 +33,17 @@ func (m mockFileReader) mockOpen(name string) (io.ReadCloser, error) {
 	}
 
 	b := []byte(`{
-        "ConsumerKey"      : "CONSUMER_KEY",
-        "ConsumerSecret"   : "CONSUMER_SECRET",
-        "AccessToken"      : "ACCESS_TOKEN",
-        "AccessTokenSecret": "ACCESS_TOKEN_SECRET"
-    }`)
+      		"ConsumerKey"      : "CONSUMER_KEY",
+        	"ConsumerSecret"   : "CONSUMER_SECRET",
+        	"AccessToken"      : "ACCESS_TOKEN",
+        	"AccessTokenSecret": "ACCESS_TOKEN_SECRET"
+	}`)
 	return ioutil.NopCloser(bytes.NewReader(b)), nil
 }
 
 func TestFileOpenError(t *testing.T) {
 	mock := mockFileReader{true}
-	_, err := tweet.NewConfig(mock.mockOpen, tweet.JSONDecoderFactory)
+	_, err := config.New(mock.mockOpen, helpers.NewJSONDecoder)
 	if err == nil {
 		t.Error("expected file open error, got: nil")
 	}
@@ -50,7 +51,7 @@ func TestFileOpenError(t *testing.T) {
 
 func TestDecodeError(t *testing.T) {
 	mock := mockFileReader{false}
-	_, err := tweet.NewConfig(mock.mockOpen, mockDecoderFactory)
+	_, err := config.New(mock.mockOpen, mockDecoderFactory)
 	if err == nil {
 		t.Error("expected file decode error, got: nil")
 	}
@@ -58,7 +59,7 @@ func TestDecodeError(t *testing.T) {
 
 func TestConfigSuccess(t *testing.T) {
 	mock := mockFileReader{false}
-	_, err := tweet.NewConfig(mock.mockOpen, tweet.JSONDecoderFactory)
+	_, err := config.New(mock.mockOpen, helpers.NewJSONDecoder)
 	if err != nil {
 		t.Errorf("expected nil error, got: %v", err)
 	}

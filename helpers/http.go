@@ -1,4 +1,4 @@
-package tweet
+package helpers
 
 import (
 	"io"

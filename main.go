@@ -5,21 +5,23 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/danbondd/tweet/tweet"
+	"github.com/danbondd/tweet/config"
+	"github.com/danbondd/tweet/helpers"
+	"github.com/danbondd/tweet/twitter"
 )
 
 func main() {
-	c, err := tweet.NewConfig(tweet.FileReader, tweet.JSONDecoderFactory)
+	c, err := config.New(helpers.FileReader, helpers.NewJSONDecoder)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		os.Exit(1)
+		return
 	}
 
-	t := tweet.NewTweet(http.DefaultClient, http.NewRequest)
-	res, err := t.Send(c, os.Args[1])
+	tweet := twitter.NewTweet(http.DefaultClient, http.NewRequest)
+	res, err := tweet.Send(c, os.Args[1])
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error sending tweet: %v\n", err)
-		os.Exit(1)
+		return
 	}
 
 	fmt.Println(res)

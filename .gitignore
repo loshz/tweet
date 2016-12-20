@@ -1,1 +1,4 @@
 config.json
+*.out
+.DS_STORE
+tweet
