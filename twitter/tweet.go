@@ -5,19 +5,19 @@ import (
 	"net/http"
 
 	"github.com/danbondd/tweet/config"
-	"github.com/danbondd/tweet/helpers"
+	"github.com/danbondd/tweet/utils"
 )
 
 const tweetLength = 140
 
 // Tweet is a custom struct containing a HTTP client and request.
 type Tweet struct {
-	client  helpers.HTTPClient
-	request helpers.NewRequest
+	client  utils.HTTPClient
+	request utils.NewRequest
 }
 
 // NewTweet returns a new Tweet with all of its required fields.
-func NewTweet(c helpers.HTTPClient, r helpers.NewRequest) Tweet {
+func NewTweet(c utils.HTTPClient, r utils.NewRequest) Tweet {
 	return Tweet{c, r}
 }
 
@@ -43,8 +43,8 @@ func (t Tweet) Send(c *config.Config, status string) (string, error) {
 	}
 	defer res.Body.Close()
 
-	if !helpers.ValidResponse(res) {
-		return status, fmt.Errorf("%s", res.Status)
+	if res.StatusCode != http.StatusOK {
+		return status, fmt.Errorf("invalid status code: %s", res.Status)
 	}
 
 	return fmt.Sprintf("Tweet successfully sent!"), nil
