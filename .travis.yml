@@ -1,9 +1,7 @@
 language: go
 go:
-- 1.7.4
-before_install: make setup
+- 1.7.x
+- 1.8.x
 script: make test
 notifications:
-  emails: false
-  slack:
-    secure: cBA5qQnC0/3sCe+ylydBcsuobwUQe8MoH53uCDwjZ8BkavoA0jE0/M9D+jTD2taJeKtNDuAOqMz+kmqXkZMdmt2yCOCdFh5nNYTD87HucK2d45wzzH/mV6vyQ+2fSyM4nwMfgY8RKp2aP1B/37JuvqohPxoOF3k2Ef8UIta5emMeFSuyRyh3x+3P5blbs+F/fGjM+nCdUFgiOR2nY+iaOTRqckHs7qcDurKYLuEnIcGtT84+/GXYRrN0cHUVXkTrx2+MXnHNJDBW+WMZUAL4MUyRXFnumlgxMChUt8gxtTU7wdnGMV0F6b4Qq1YRwZHXJyNBzZQ0Q4Zb6Q3Gj1CJAXuA5KKY9CvrTEe6NJtSPE3L6WnHgtklct8LQ+IYyTY1SrJU4noL2s0riq5/XWxQ7ZvNTiNRwI/3plx8Wa+rOFYu/SRmn3RmZnqdmFtV3Wnc4TfQrLx7aOPWrTpa1cg8iQGMN1hR84cq2RmaXEoUML/KkQTSlYgbAFYBNR0QPCaknPsxTLdauVfR8ZPkfAT+bDjPxZD8YXEAG7WzRAKpO+9Ch1bZx3myiTk3Aoj78ecV2AORw5PJp0q3FhaBjwOlrwJymSs9XRiygvaSS7gXuWozjfm86QThZrxmKYrHGYojqcRrRaDpmaZ73MuM8qy2GowdgWvh4k0IVi/FDxOB1iA=
+  email: false

@@ -1,8 +1,7 @@
 NAME = tweet 
 
 setup:
-	mkdir -p ~/.tweet/
-	cp config.json.example ~/.tweet/config.json
+	mkdir -p ~/.config/tweet && cp config.example.json ~/.config/tweet/config.json
 
 build:
 	go build -o $(NAME)

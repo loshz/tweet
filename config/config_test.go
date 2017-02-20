@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/danbondd/tweet/config"
-	"github.com/danbondd/tweet/helpers"
+	"github.com/danbondd/tweet/utils"
 )
 
 type testDecoder struct {
@@ -19,7 +19,7 @@ func (t testDecoder) Decode(v interface{}) error {
 	return errors.New("decode error")
 }
 
-func mockDecoderFactory(r io.Reader) helpers.Decoder {
+func mockDecoderFactory(r io.Reader) utils.Decoder {
 	return testDecoder{r}
 }
 
@@ -43,7 +43,7 @@ func (m mockFileReader) mockOpen(name string) (io.ReadCloser, error) {
 
 func TestFileOpenError(t *testing.T) {
 	mock := mockFileReader{true}
-	_, err := config.New(mock.mockOpen, helpers.NewJSONDecoder)
+	_, err := config.New(mock.mockOpen, utils.NewJSONDecoder)
 	if err == nil {
 		t.Error("expected file open error, got: nil")
 	}
@@ -59,7 +59,7 @@ func TestDecodeError(t *testing.T) {
 
 func TestConfigSuccess(t *testing.T) {
 	mock := mockFileReader{false}
-	_, err := config.New(mock.mockOpen, helpers.NewJSONDecoder)
+	_, err := config.New(mock.mockOpen, utils.NewJSONDecoder)
 	if err != nil {
 		t.Errorf("expected nil error, got: %v", err)
 	}

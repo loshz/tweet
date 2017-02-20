@@ -6,10 +6,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/danbondd/tweet/helpers"
+	"github.com/danbondd/tweet/utils"
 )
 
-const configFile string = "/.tweet/config.json"
+const configFile string = "/.config/tweet/config.json"
 
 // Config contains the Twitter API keys.
 type Config struct {
@@ -20,7 +20,7 @@ type Config struct {
 }
 
 // New creates a new Config from the given fields in config.json
-func New(open helpers.OpenFile, d helpers.JSONDecoder) (*Config, error) {
+func New(open utils.OpenFile, d utils.JSONDecoder) (*Config, error) {
 	c := new(Config)
 
 	homeDir := os.Getenv("HOME")

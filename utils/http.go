@@ -1,4 +1,4 @@
-package helpers
+package utils
 
 import (
 	"io"
@@ -13,8 +13,3 @@ type HTTPClient interface {
 
 // NewRequest returns a new HTTP Request given a method, URL, and optional body.
 type NewRequest func(method, urlStr string, body io.Reader) (*http.Request, error)
-
-// ValidResponse checks a given HTTP response is valid and doesn't contain errors.
-func ValidResponse(res *http.Response) bool {
-	return res.StatusCode == http.StatusOK
-}
