@@ -11,6 +11,11 @@ import (
 )
 
 func main() {
+	if len(os.Args) < 2 {
+		fmt.Fprintln(os.Stderr, "not enough arguments passed to command")
+		os.Exit(-1)
+	}
+
 	c, err := config.New(utils.FileReader, utils.NewJSONDecoder)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
