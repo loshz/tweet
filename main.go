@@ -1,13 +1,9 @@
-package main
+package tweet
 
 import (
 	"fmt"
 	"net/http"
 	"os"
-
-	"github.com/danbondd/tweet/config"
-	"github.com/danbondd/tweet/twitter"
-	"github.com/danbondd/tweet/utils"
 )
 
 func main() {
@@ -16,14 +12,15 @@ func main() {
 		os.Exit(-1)
 	}
 
-	c, err := config.New(utils.FileReader, utils.NewJSONDecoder)
+	homeDir := os.Getenv("HOME")
+	config, err := NewConfig(homeDir, configFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(-1)
 	}
 
-	tweet := twitter.NewTweet(http.DefaultClient, http.NewRequest)
-	res, err := tweet.Send(c, os.Args[1])
+	tweet := NewTweet(http.DefaultClient, http.NewRequest)
+	res, err := tweet.Send(config, os.Args[1])
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error sending tweet: %v\n", err)
 		os.Exit(-1)

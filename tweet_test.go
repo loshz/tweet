@@ -1,4 +1,4 @@
-package twitter_test
+package tweet_test
 
 import (
 	"bytes"
@@ -8,8 +8,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/danbondd/tweet/config"
-	"github.com/danbondd/tweet/twitter"
+	"github.com/danbondd/tweet"
 )
 
 type mockHTTPClient struct {
@@ -32,15 +31,15 @@ func mockNewRequest(method, urlStr string, body io.Reader) (*http.Request, error
 	return &http.Request{}, errors.New("error creating request")
 }
 
-func newConfig() *config.Config {
-	return new(config.Config)
+func newConfig() *tweet.Config {
+	return new(tweet.Config)
 }
 
 func TestInvalidTweetLength(t *testing.T) {
 	status := "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce consectetur dui in metus finibus, a laoreet lectus feugiat. Donec lobortis id."
 
-	tweet := twitter.NewTweet(http.DefaultClient, http.NewRequest)
-	_, err := tweet.Send(newConfig(), status)
+	tw := tweet.NewTweet(http.DefaultClient, http.NewRequest)
+	_, err := tw.Send(newConfig(), status)
 	if err == nil {
 		t.Errorf("expected error, got: nil")
 	}
@@ -50,8 +49,8 @@ func TestSuccessfulTweet(t *testing.T) {
 	status := "SUCCESS :)"
 
 	m := mockHTTPClient{false, http.StatusOK}
-	tweet := twitter.NewTweet(m, http.NewRequest)
-	_, err := tweet.Send(newConfig(), status)
+	tw := tweet.NewTweet(m, http.NewRequest)
+	_, err := tw.Send(newConfig(), status)
 	if err != nil {
 		t.Errorf("expected nil, got: %v", err)
 	}
@@ -60,8 +59,8 @@ func TestSuccessfulTweet(t *testing.T) {
 func TestNewRequestError(t *testing.T) {
 	status := "Cannot create new request :("
 
-	tweet := twitter.NewTweet(http.DefaultClient, mockNewRequest)
-	_, err := tweet.Send(newConfig(), status)
+	tw := tweet.NewTweet(http.DefaultClient, mockNewRequest)
+	_, err := tw.Send(newConfig(), status)
 	if err == nil {
 		t.Errorf("expected error, got: nil")
 	}
@@ -71,8 +70,8 @@ func TestRequestDoError(t *testing.T) {
 	status := "Cannot create perform request :("
 
 	m := mockHTTPClient{true, http.StatusInternalServerError}
-	tweet := twitter.NewTweet(m, http.NewRequest)
-	_, err := tweet.Send(newConfig(), status)
+	tw := tweet.NewTweet(m, http.NewRequest)
+	_, err := tw.Send(newConfig(), status)
 	if err == nil {
 		t.Errorf("expected error, got: nil")
 	}
@@ -82,8 +81,8 @@ func TestRequestStatusNotOK(t *testing.T) {
 	status := "Bad HTTP response status code :("
 
 	m := mockHTTPClient{false, http.StatusUnauthorized}
-	tweet := twitter.NewTweet(m, http.NewRequest)
-	_, err := tweet.Send(newConfig(), status)
+	tw := tweet.NewTweet(m, http.NewRequest)
+	_, err := tw.Send(newConfig(), status)
 	if err == nil {
 		t.Errorf("expected error, got: nil")
 	}
