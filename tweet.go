@@ -1,11 +1,12 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 )
 
-const tweetLength = 140
+const tweetLength int = 140
 
 // Tweet is a custom struct containing a HTTP client and request.
 type Tweet struct {
@@ -39,12 +40,12 @@ func (tweet Tweet) Send(config *Config, status string) error {
 
 	res, err := tweet.client.Do(req)
 	if err != nil {
-		return fmt.Errorf("%v", err)
+		return fmt.Errorf("error performing HTTP request: %v", err)
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("invalid status code: %s", res.Status)
+		return errors.New(res.Status)
 	}
 
 	return nil
