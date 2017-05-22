@@ -20,11 +20,11 @@ func main() {
 	}
 
 	tweet := NewTweet(http.DefaultClient, http.NewRequest)
-	res, err := tweet.Send(config, os.Args[1])
+	err = tweet.Send(config, os.Args[1])
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error sending tweet: %v\n", err)
 		os.Exit(-1)
 	}
 
-	fmt.Println(res)
+	fmt.Println("Tweet successfully sent!")
 }

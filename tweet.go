@@ -24,28 +24,28 @@ func NewTweet(client HTTPClient, req NewRequest) Tweet {
 // Send takes Twitter app (https://apps.titter.com) credentials and passes
 // them to an OAuth generator along with a given status. It then attempts
 // to send a POST request to the Twitter API and handle a response.
-func (t Tweet) Send(c *Config, status string) (string, error) {
+func (tweet Tweet) Send(config *Config, status string) error {
 	if len(status) > tweetLength {
-		return status, fmt.Errorf("tweet exceeds %d character limit", tweetLength)
+		return fmt.Errorf("tweet exceeds %d character limit", tweetLength)
 	}
 
-	oa := NewOAuthDetails(c, status)
+	oa := NewOAuthDetails(config, status)
 
-	req, err := t.request(http.MethodPost, fmt.Sprintf(apiURL+apiVersion+statusURI+"?status=%s", encodeStatus(&status)), nil)
+	req, err := tweet.request(http.MethodPost, fmt.Sprintf(apiURL+apiVersion+statusURI+"?status=%s", encodeStatus(&status)), nil)
 	if err != nil {
-		return status, fmt.Errorf("error building request: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
-	req.Header.Set(authHeader, fmt.Sprintf("%s", oa))
+	req.Header.Set(authHeader, oa.String())
 
-	res, err := t.client.Do(req)
+	res, err := tweet.client.Do(req)
 	if err != nil {
-		return status, fmt.Errorf("%v", err)
+		return fmt.Errorf("%v", err)
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return status, fmt.Errorf("invalid status code: %s", res.Status)
+		return fmt.Errorf("invalid status code: %s", res.Status)
 	}
 
-	return fmt.Sprintf("Tweet successfully sent!"), nil
+	return nil
 }
