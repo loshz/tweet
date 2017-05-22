@@ -1,4 +1,4 @@
-package twitter
+package main
 
 import (
 	"bytes"
@@ -11,8 +11,6 @@ import (
 	"net/url"
 	"strings"
 	"time"
-
-	"github.com/danbondd/tweet/config"
 )
 
 const (
@@ -48,7 +46,7 @@ func (oa OAuthDetails) String() string {
 }
 
 // NewOAuthDetails collects a valid set of OAuth details based on credentials passed from a config file.
-func NewOAuthDetails(c *config.Config, status string) *OAuthDetails {
+func NewOAuthDetails(c *Config, status string) *OAuthDetails {
 	oa := new(OAuthDetails)
 	oa.ConsumerKey = c.ConsumerKey
 	oa.Nonce = *generateNonce()
@@ -79,7 +77,7 @@ func generateTimestamp() *string {
 	return &f
 }
 
-func (oa *OAuthDetails) generateSignature(status string, c *config.Config) {
+func (oa *OAuthDetails) generateSignature(status string, c *Config) {
 	params := collectParams(oa, encodeStatus(&status))
 	baseString := generateBaseString(params)
 	sig := sign(baseString, c)
@@ -117,7 +115,7 @@ func generateBaseString(params *string) *string {
 	return &baseString
 }
 
-func generateSigningKey(c *config.Config) *string {
+func generateSigningKey(c *Config) *string {
 	var b bytes.Buffer
 	b.WriteString(url.QueryEscape(c.ConsumerSecret))
 	b.WriteString("&")
@@ -127,7 +125,7 @@ func generateSigningKey(c *config.Config) *string {
 	return &key
 }
 
-func sign(baseString *string, c *config.Config) *string {
+func sign(baseString *string, c *Config) *string {
 	signingKey := generateSigningKey(c)
 	h := hmac.New(sha1.New, []byte(*signingKey))
 	h.Write([]byte(*baseString))
