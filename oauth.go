@@ -1,4 +1,4 @@
-package tweet
+package main
 
 import (
 	"bytes"

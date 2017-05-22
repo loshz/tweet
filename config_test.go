@@ -1,11 +1,9 @@
-package tweet_test
+package main
 
 import (
 	"io/ioutil"
 	"os"
 	"testing"
-
-	"github.com/danbondd/tweet"
 )
 
 func tmpFile(json string) (*os.File, error) {
@@ -26,7 +24,7 @@ func tmpFile(json string) (*os.File, error) {
 
 func TestNewConfig(t *testing.T) {
 	t.Run("TestInvalidConfigFile", func(t *testing.T) {
-		_, err := tweet.NewConfig("", "invalid.file")
+		_, err := NewConfig("", "invalid.file")
 		if err == nil {
 			t.Error("expected error opening invalid file, got: nil")
 		}
@@ -39,7 +37,7 @@ func TestNewConfig(t *testing.T) {
 		}
 		defer os.Remove(tmpfile.Name())
 
-		_, err = tweet.NewConfig("", tmpfile.Name())
+		_, err = NewConfig("", tmpfile.Name())
 		if err == nil {
 			t.Error("expected error unmarshalling JSON from config file, got: nil")
 		}
@@ -57,7 +55,7 @@ func TestNewConfig(t *testing.T) {
 		}
 		defer os.Remove(tmpfile.Name())
 
-		_, err = tweet.NewConfig("", tmpfile.Name())
+		_, err = NewConfig("", tmpfile.Name())
 		if err != nil {
 			t.Errorf("expected error: nil, got: %v", err)
 		}
