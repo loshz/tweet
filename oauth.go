@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/base64"
@@ -14,9 +13,7 @@ import (
 )
 
 const (
-	apiURL          string = "https://api.twitter.com/"
-	apiVersion      string = "1.1"
-	statusURI       string = "/statuses/update.json"
+	apiURL          string = "https://api.twitter.com/1.1/statuses/update.json"
 	signatureMethod string = "HMAC-SHA1"
 	oAuthVersion    string = "1.0"
 	authHeader      string = "Authorization"
@@ -31,6 +28,22 @@ type OAuthDetails struct {
 	Timestamp,
 	Token,
 	Version string
+}
+
+func (oa *OAuthDetails) generateSignature(status string, c *Config) {
+	params := fmt.Sprintf(`oauth_consumer_key=%s&oauth_nonce=%s&oauth_signature_method=%s&oauth_timestamp=%s&oauth_token=%s&oauth_version=%s&status=%s`,
+		oa.ConsumerKey,
+		oa.Nonce,
+		signatureMethod,
+		oa.Timestamp,
+		oa.Token,
+		oAuthVersion,
+		encodeStatus(status),
+	)
+
+	baseString := fmt.Sprintf("%s&%s&%s", http.MethodPost, url.QueryEscape(apiURL), encodeStatus(params))
+	sig := sign(baseString, c)
+	oa.Signature = url.QueryEscape(sig)
 }
 
 func (oa OAuthDetails) String() string {
@@ -49,91 +62,31 @@ func (oa OAuthDetails) String() string {
 func NewOAuthDetails(c *Config, status string) *OAuthDetails {
 	oa := new(OAuthDetails)
 	oa.ConsumerKey = c.ConsumerKey
-	oa.Nonce = *generateNonce()
+	oa.Nonce = generateNonce()
 	oa.SignatureMethod = signatureMethod
-	oa.Timestamp = *generateTimestamp()
+	oa.Timestamp = fmt.Sprintf("%d", time.Now().Unix())
 	oa.Token = c.AccessToken
 	oa.Version = oAuthVersion
 	oa.generateSignature(status, c)
-
 	return oa
 }
 
-func generateNonce() *string {
+func generateNonce() string {
 	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
 	b := make([]byte, 32)
 	for i := range b {
 		b[i] = chars[rand.Intn(len(chars))]
 	}
-	s := string(b)
-
-	return &s
+	return string(b)
 }
 
-func generateTimestamp() *string {
-	t := time.Now().Unix()
-	f := fmt.Sprintf("%d", t)
-
-	return &f
+func sign(baseString string, c *Config) string {
+	signingKey := fmt.Sprintf("%s&%s", url.QueryEscape(c.ConsumerSecret), url.QueryEscape(c.AccessTokenSecret))
+	h := hmac.New(sha1.New, []byte(signingKey))
+	h.Write([]byte(baseString))
+	return base64.StdEncoding.EncodeToString(h.Sum(nil))
 }
 
-func (oa *OAuthDetails) generateSignature(status string, c *Config) {
-	params := collectParams(oa, encodeStatus(&status))
-	baseString := generateBaseString(params)
-	sig := sign(baseString, c)
-	oa.Signature = url.QueryEscape(*sig)
-}
-
-func collectParams(oa *OAuthDetails, status string) *string {
-	params := fmt.Sprintf(`oauth_consumer_key=%s&oauth_nonce=%s&oauth_signature_method=%s&oauth_timestamp=%s&oauth_token=%s&oauth_version=%s&status=%s`,
-		oa.ConsumerKey,
-		oa.Nonce,
-		signatureMethod,
-		oa.Timestamp,
-		oa.Token,
-		oAuthVersion,
-		status,
-	)
-
-	return &params
-}
-
-func generateBaseString(params *string) *string {
-	var b, u bytes.Buffer
-	b.WriteString(http.MethodPost)
-	b.WriteString("&")
-
-	u.WriteString(apiURL)
-	u.WriteString(apiVersion)
-	u.WriteString(statusURI)
-
-	b.WriteString(url.QueryEscape(u.String()))
-	b.WriteString("&")
-	b.WriteString(encodeStatus(params))
-	baseString := b.String()
-
-	return &baseString
-}
-
-func generateSigningKey(c *Config) *string {
-	var b bytes.Buffer
-	b.WriteString(url.QueryEscape(c.ConsumerSecret))
-	b.WriteString("&")
-	b.WriteString(url.QueryEscape(c.AccessTokenSecret))
-	key := b.String()
-
-	return &key
-}
-
-func sign(baseString *string, c *Config) *string {
-	signingKey := generateSigningKey(c)
-	h := hmac.New(sha1.New, []byte(*signingKey))
-	h.Write([]byte(*baseString))
-	result := base64.StdEncoding.EncodeToString(h.Sum(nil))
-
-	return &result
-}
-
-func encodeStatus(status *string) string {
-	return strings.Replace(url.QueryEscape(*status), "+", "%20", -1)
+func encodeStatus(status string) string {
+	return strings.Replace(url.QueryEscape(status), "+", "%20", -1)
 }

@@ -32,7 +32,7 @@ func (tweet Tweet) Send(config *Config, status string) error {
 
 	oa := NewOAuthDetails(config, status)
 
-	req, err := tweet.request(http.MethodPost, fmt.Sprintf(apiURL+apiVersion+statusURI+"?status=%s", encodeStatus(&status)), nil)
+	req, err := tweet.request(http.MethodPost, fmt.Sprintf("%s?status=%s", apiURL, encodeStatus(status)), nil)
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
@@ -47,6 +47,5 @@ func (tweet Tweet) Send(config *Config, status string) error {
 	if res.StatusCode != http.StatusOK {
 		return errors.New(res.Status)
 	}
-
 	return nil
 }
