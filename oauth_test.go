@@ -16,7 +16,7 @@ func TestStringOutput(t *testing.T) {
 		Token:       "Token",
 	}
 
-	if fmt.Sprintf("%s", oa) != expected {
+	if fmt.Sprint(oa) != expected {
 		t.Errorf("format does not match expected output")
 	}
 }
