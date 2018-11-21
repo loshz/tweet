@@ -16,21 +16,20 @@ const (
 	apiURL          string = "https://api.twitter.com/1.1/statuses/update.json"
 	signatureMethod string = "HMAC-SHA1"
 	oAuthVersion    string = "1.0"
-	authHeader      string = "Authorization"
 )
 
 // OAuthDetails contains a valid set of OAuth details based on credentials from a config file.
 type OAuthDetails struct {
-	ConsumerKey,
-	Nonce,
-	Signature,
-	SignatureMethod,
-	Timestamp,
-	Token,
-	Version string
+	ConsumerKey     string
+	Nonce           string
+	Signature       string
+	SignatureMethod string
+	Timestamp       string
+	Token           string
+	Version         string
 }
 
-func (oa *OAuthDetails) generateSignature(status string, c *Config) {
+func (oa *OAuthDetails) generateSignature(status, consumerSecret, accessTokenSecret string) {
 	params := fmt.Sprintf(`oauth_consumer_key=%s&oauth_nonce=%s&oauth_signature_method=%s&oauth_timestamp=%s&oauth_token=%s&oauth_version=%s&status=%s`,
 		oa.ConsumerKey,
 		oa.Nonce,
@@ -42,7 +41,7 @@ func (oa *OAuthDetails) generateSignature(status string, c *Config) {
 	)
 
 	baseString := fmt.Sprintf("%s&%s&%s", http.MethodPost, url.QueryEscape(apiURL), encodeStatus(params))
-	sig := sign(baseString, c)
+	sig := sign(baseString, consumerSecret, accessTokenSecret)
 	oa.Signature = url.QueryEscape(sig)
 }
 
@@ -58,16 +57,16 @@ func (oa OAuthDetails) String() string {
 	)
 }
 
-// NewOAuthDetails collects a valid set of OAuth details based on credentials passed from a config file.
-func NewOAuthDetails(c *Config, status string) *OAuthDetails {
+// newOAuthDetails collects a valid set of OAuth details based on Twitter API credentials.
+func newOAuthDetails(consumerKey, consumerSecret, accessToken, accessTokenSecret, status string) *OAuthDetails {
 	oa := new(OAuthDetails)
-	oa.ConsumerKey = c.ConsumerKey
+	oa.ConsumerKey = consumerKey
 	oa.Nonce = generateNonce()
 	oa.SignatureMethod = signatureMethod
 	oa.Timestamp = fmt.Sprintf("%d", time.Now().Unix())
-	oa.Token = c.AccessToken
+	oa.Token = accessToken
 	oa.Version = oAuthVersion
-	oa.generateSignature(status, c)
+	oa.generateSignature(status, consumerSecret, accessTokenSecret)
 	return oa
 }
 
@@ -80,8 +79,8 @@ func generateNonce() string {
 	return string(b)
 }
 
-func sign(baseString string, c *Config) string {
-	signingKey := fmt.Sprintf("%s&%s", url.QueryEscape(c.ConsumerSecret), url.QueryEscape(c.AccessTokenSecret))
+func sign(baseString, consumerSecret, accessTokenSecret string) string {
+	signingKey := fmt.Sprintf("%s&%s", url.QueryEscape(consumerSecret), url.QueryEscape(accessTokenSecret))
 	h := hmac.New(sha1.New, []byte(signingKey))
 	h.Write([]byte(baseString))
 	return base64.StdEncoding.EncodeToString(h.Sum(nil))
